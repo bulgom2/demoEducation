@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko"
+      layout:decorate="~{layouts/layout_common}"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">   <!-- 꾸며주는 레이아웃을 가지고 오기 -->
+
+<!-- 이 페이지에서만 적용할 것들을 아래에 넣어줌 -->
+<th:block layout:fragment="script"> <!-- 리소스 가져올 링크 들어갈 곳 -->
+</th:block>
+
+<script th:inline="javascript"> // 직접 짜는 코드가 들어갈 곳
+</script>
+
+<th:block layout:fragment="css">  <!-- 리소스 가져올 링크 들어갈 곳 -->
+  <style>
+      .fieldError {
+          color: red;
+          font-weight: bold;
+          font-size: large;
+      }
+  </style>
+</th:block>
+
+<style th:inline="css">
+</style>
+
+
+<th:block layout:fragment="content">    <!--  -->
+  <div class="content-wrapper">
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>글쓰기</h1>
+          </div>  <!-- /.col-sm-6 -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">HOME</a></li>
+              <li class="breadcrumb-item active">글쓰기</li>
+            </ol>
+          </div>  <!-- /.col-sm-6 -->
+        </div>  <!-- /.row -->
+      </div>  <!-- /.container-fluid -->
+    </section>  <!-- /.content-header -->
+    <section class="content">
+      <div class="card card-default">
+        <div class="card-header">
+          <h4 class="card-title">글쓰기</h4>
+          <button type="submit" class="btn btn-outline-dark btn-sm float-right" form="boardForm">저장</button>
+        </div>  <!-- /.card-header -->
+        <div class="card-body">
+          <div class="container-fluid">
+            <form id="boardForm" method="post" action="/board/form" th:object="${boardDto}">
+              <div class="form-group">
+                <label>제목</label>
+                <input type="text" class="form-control" th:field="*{title}" placeholder="제목">
+              </div>
+              <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="fieldError"></p>
+              <div class="form-group">
+                <label>내용</label>
+                <textarea class="form-control" rows="3" th:field="*{content}" placeholder="내용"></textarea>
+              </div>
+              <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError"></p>
+            </form>
+          </div>  <!-- /.container-fluid -->
+        </div>  <!-- /.card-body -->
+      </div>  <!-- /.card card-default -->
+    </section>  <!-- /.content -->
+  </div>  <!-- /.content-wrapper -->
+</th:block>
+</html>
+

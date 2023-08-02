@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko"
+      layout:decorate="~{layouts/layout_common}"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">   <!-- 꾸며주는 레이아웃을 가지고 오기 -->
+
+<!-- 이 페이지에서만 적용할 것들을 아래에 넣어줌 -->
+<th:block layout:fragment="script"> <!-- 리소스 가져올 링크 들어갈 곳 -->
+</th:block>
+
+<script th:inline="javascript"> // 직접 짜는 코드가 들어갈 곳
+  function deleteBoard() {
+
+  }
+</script>
+
+<th:block layout:fragment="css">  <!-- 리소스 가져올 링크 들어갈 곳 -->
+</th:block>
+
+<style th:inline="css">
+</style>
+
+
+<th:block layout:fragment="content">    <!--  -->
+  <div class="content-wrapper">
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>작성글</h1>
+          </div>  <!-- /.col-sm-6 -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">HOME</a></li>
+              <li class="breadcrumb-item active">작성글</li>
+            </ol>
+          </div>  <!-- /.col-sm-6 -->
+        </div>  <!-- /.row -->
+      </div>  <!-- /.container-fluid -->
+    </section>  <!-- /.content-header -->
+    <section class="content">
+      <div class="card card-default">
+        <div class="card-header">
+          <h4 class="card-title" th:text="${boardDto.id} + ' 번 글'"></h4>
+          <button type="button" class="btn btn-outline-dark btn-sm float-right">수정</button>
+          <button type="button" class="btn btn-outline-dark btn-sm float-right" onclick="deleteBoard()">삭제</button>
+        </div>  <!-- /.card-header -->
+        <div class="card-body">
+          <div class="container-fluid">
+            <div class="row">
+              <h4 th:text="${boardDto.title}" style="font-style: italic"></h4>
+            </div>
+            <hr>
+            <div class="row">
+              <p th:text="${boardDto.content}"></p>
+            </div>
+            <br><br>
+
+            </div>
+<!--            <div class="form-group">-->
+<!--              <label for="board-title">제목</label>-->
+<!--              <input type="text" class="form-control" id="board-title" th:value="${boardDto.title}" disabled />-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--              <label for="board-content">내용</label>-->
+<!--              <textarea class="form-control" rows="3" id="board-content" th:text="${boardDto.content}" disabled />-->
+<!--            </div>-->
+          </div>  <!-- /.container-fluid -->
+        </div>  <!-- /.card-body -->
+      </div>  <!-- /.card card-default -->
+    </section>  <!-- /.content -->
+  </div>  <!-- /.content-wrapper -->
+</th:block>
+</html>
+

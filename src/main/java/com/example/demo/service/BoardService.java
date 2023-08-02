@@ -6,6 +6,7 @@ import com.example.demo.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,14 @@ public class BoardService {
 //        }
 
         return boardDtos;
+    }
+
+    public BoardDto showDetail(Long boardId) {
+
+        // board의 id값을 찾음
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(EntityExistsException::new);   // :: -> 클래스 내 메서드 추출 개념
+        return BoardDto.of(board);
     }
 
 }

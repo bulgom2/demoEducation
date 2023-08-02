@@ -22,11 +22,15 @@ public class Board {
     private String title;
 
     @Column(nullable = false)
+    private String content;
+
+//    @Column(nullable = false)
     private String writer;
 
     @Builder
-    Board(String title, String writer) {
+    Board(String title, String content, String writer) {
         this.title = title;
+        this.content = content;
         this.writer = writer;
     }
 
@@ -46,6 +50,7 @@ public class Board {
         // 빌더는 값 변환만 해주는 기능 -> 저장은 서비스 단에서
         return Board.builder()
                 .title(boardDto.getTitle())
+                .content(boardDto.getContent())
                 .writer(boardDto.getWriter())
                 .build();
     }
