@@ -26,7 +26,7 @@ public class BoardService {
         return boardRepository.save(Board.createBoard(boardDto));
     }
 
-    // 게시물 조회
+    // 게시물 리스트 뽑기
     public List<BoardDto> getBoardList() {
 
         // 제네릭에다가 리스트에 BoardDto를 담을 거라고 명시함
@@ -47,6 +47,7 @@ public class BoardService {
         return boardDtos;
     }
 
+    // 게시물 상세 조회
     public BoardDto showDetail(Long boardId) {
 
         // board의 id값을 찾음
@@ -54,5 +55,21 @@ public class BoardService {
                 .orElseThrow(EntityExistsException::new);   // :: -> 클래스 내 메서드 추출 개념
         return BoardDto.of(board);
     }
+
+    // 게시물 삭제
+    public void deleteBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(EntityExistsException::new);
+        boardRepository.delete(board);
+    }
+
+    // 게시물 수정
+    public void updateBoard(BoardDto boardDto) {
+        Board board = boardRepository.findById(boardDto.getId())
+                .orElseThrow(EntityExistsException::new);
+        board.updateBoard(boardDto);
+    }
+
+
 
 }

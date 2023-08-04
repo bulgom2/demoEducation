@@ -32,12 +32,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>글쓰기</h1>
+            <h1>글 수정</h1>
           </div>  <!-- /.col-sm-6 -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">HOME</a></li>
-              <li class="breadcrumb-item active">글쓰기</li>
+              <li class="breadcrumb-item active">글 수정</li>
             </ol>
           </div>  <!-- /.col-sm-6 -->
         </div>  <!-- /.row -->
@@ -46,23 +46,24 @@
     <section class="content">
       <div class="card card-default">
         <div class="card-header">
-          <h4 class="card-title">글쓰기</h4>
-          <button type="submit" class="btn btn-outline-dark btn-sm float-right" form="boardForm">저장</button>
+          <h4 class="card-title" th:text="${boardDto.id} + ' 번 글'"></h4>
+          <div class="btn-group float-right">
+            <button type="button" class="btn btn-outline-dark btn-sm">취소</button>
+            <button type="button" class="btn btn-outline-dark btn-sm">저장</button>
+          </div> <!-- /.btn-group -->
         </div>  <!-- /.card-header -->
         <div class="card-body">
           <div class="container-fluid">
-            <form id="boardForm" method="post" action="/board/form" th:object="${boardDto}">
               <div class="form-group">
                 <label>제목</label>
-                <input type="text" class="form-control" th:field="*{title}" placeholder="제목">
+                <input type="text" class="form-control" th:value="*{boardDto.title}" placeholder="제목">
               </div>
               <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="fieldError"></p>
               <div class="form-group">
                 <label>내용</label>
-                <textarea class="form-control" rows="3" th:field="*{content}" placeholder="내용"></textarea>
+                <textarea class="form-control" rows="3" th:text="*{boardDto.content}" placeholder="내용"></textarea>
               </div>
               <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError"></p>
-            </form>
           </div>  <!-- /.container-fluid -->
         </div>  <!-- /.card-body -->
       </div>  <!-- /.card card-default -->

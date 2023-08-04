@@ -7,20 +7,68 @@
 
 <!-- 이 페이지에서만 적용할 것들을 아래에 넣어줌 -->
 <th:block layout:fragment="script"> <!-- 리소스 가져올 링크 들어갈 곳 -->
-</th:block>
-
-<script th:inline="javascript"> // 직접 짜는 코드가 들어갈 곳
-  function deleteBoard() {
-
+  <script th:inline="javascript"> // 직접 짜는 코드가 들어갈 곳
+  function deleteBoard(obj) {
+      let id = obj.dataset.id;
+      let url = "/board/delete/" + id;
+      $.ajax({
+          url: url,
+          type: 'DELETE', // 컨트롤러의 DeleteMapping 감지
+          cache: false,
+          success: function(data) { // 작업 후 뒤로가기를 했을 때 전 동작을 그대로 실행하지 않게 하기 위함
+              location.replace("/board/info");
+          }
+      })
   }
-</script>
+
+  function updateBoard() {
+      $('#save-btn').css('display', 'block');
+      $('#update-btn').css('display', 'none');
+      $('.form-control').attr('disabled', false);
+
+      history.pushState(null, null, location.href);
+      window.onpopstate = function(event) {
+          history.go(1);
+      }
+  }
+
+  function saveBoard(obj) {
+      let id = obj.dataset.id;
+      let url = "/board/update/";
+      let boardDto = {  //  각 값이 포함된 태그의 id와 매칭함
+          id: id,
+          title: $('#board-title').val(),
+          content: $('#board-content').val(),
+      }
+
+      $.ajax({
+          url: url,
+          type: 'PATCH',
+          data: JSON.stringify(boardDto),
+          dataType: 'JSON',
+          contentType: 'application/json;charset=UTF-8',
+          cache: false,
+          success: function(data) { // 통신이 완벽히 이루어지면 버튼과 폼의 상태를 바꿈
+              $('#save-btn').css('display', 'none');
+              $('#update-btn').css('display', 'block');
+              $('.form-control').attr('disabled', true);
+
+              history.pushState(null, null, location.href);
+              window.onpopstate = function(event) {
+                  location.replace("/board/info");  // 뒤로 갔을 때 게시글 목록으로 가기
+              }
+          },
+          error: function() {}
+      })
+  }
+
+  </script>
+</th:block>
 
 <th:block layout:fragment="css">  <!-- 리소스 가져올 링크 들어갈 곳 -->
+  <style th:inline="css">
+  </style>
 </th:block>
-
-<style th:inline="css">
-</style>
-
 
 <th:block layout:fragment="content">    <!--  -->
   <div class="content-wrapper">
@@ -43,29 +91,37 @@
       <div class="card card-default">
         <div class="card-header">
           <h4 class="card-title" th:text="${boardDto.id} + ' 번 글'"></h4>
-          <button type="button" class="btn btn-outline-dark btn-sm float-right">수정</button>
-          <button type="button" class="btn btn-outline-dark btn-sm float-right" onclick="deleteBoard()">삭제</button>
+          <div class="btn-group float-right">
+            <button type="button" class="btn btn-outline-dark btn-sm">목록</button>
+            <button id="save-btn" type="button" class="btn btn-outline-dark btn-sm"
+                    style="display: none;" th:data-id="${boardDto.id}" onclick="saveBoard(this)">저장</button>
+            <button id="update-btn" type="button" class="btn btn-outline-dark btn-sm"
+                    onclick="updateBoard(this)">수정</button>
+            <button type="button" class="btn btn-outline-dark btn-sm"
+                    th:data-id="${boardDto.id}" onclick="deleteBoard(this)">삭제</button>
+          </div> <!-- /.btn-group -->
         </div>  <!-- /.card-header -->
         <div class="card-body">
           <div class="container-fluid">
-            <div class="row">
-              <h4 th:text="${boardDto.title}" style="font-style: italic"></h4>
+            <div class="form-group">
+              <label for="board-title">제목</label>
+              <input type="text" class="form-control" id="board-title" th:value="${boardDto.title}" disabled />
             </div>
-            <hr>
-            <div class="row">
-              <p th:text="${boardDto.content}"></p>
+            <div class="form-group">
+              <label for="board-content">내용</label>
+              <textarea class="form-control" rows="3" id="board-content" th:text="${boardDto.content}" disabled />
             </div>
-            <br><br>
 
-            </div>
-<!--            <div class="form-group">-->
-<!--              <label for="board-title">제목</label>-->
-<!--              <input type="text" class="form-control" id="board-title" th:value="${boardDto.title}" disabled />-->
-<!--            </div>-->
-<!--            <div class="form-group">-->
-<!--              <label for="board-content">내용</label>-->
-<!--              <textarea class="form-control" rows="3" id="board-content" th:text="${boardDto.content}" disabled />-->
-<!--            </div>-->
+            <!-- 인풋 없이 -->
+            <!--            <div class="row">-->
+            <!--              <h4 th:text="${boardDto.title}" style="font-style: italic"></h4>-->
+            <!--            </div>-->
+            <!--            <hr>-->
+            <!--            <div class="row">-->
+            <!--              <p th:text="${boardDto.content}"></p>-->
+            <!--            </div>-->
+            <!--            <br><br>-->
+
           </div>  <!-- /.container-fluid -->
         </div>  <!-- /.card-body -->
       </div>  <!-- /.card card-default -->
