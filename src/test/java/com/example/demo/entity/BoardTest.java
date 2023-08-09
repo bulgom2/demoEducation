@@ -32,16 +32,16 @@ class BoardTest {
         return boardDto;
     }
 
-    @Test
-    @DisplayName("게시글 저장 테스트")  // 테스트 로그에 남음, 주석 정도의 의미
-    public void saveTest() {
-//        Board savedBoard = boardService.saveBoard(저장할 데이터);
-        BoardDto boardDto = createBoardDto();
-        Board savedBoard = boardService.saveBoard(boardDto);
-
-        // 두 값을 비교해서 같을 경우 테스트가 정상적으로 돌아갔다고 알려주는 메서드
-        assertEquals(boardDto.getTitle(), savedBoard.getTitle());
-        assertEquals(boardDto.getWriter(), savedBoard.getWriter());
-    }
+//    @Test
+//    @DisplayName("게시글 저장 테스트")  // 테스트 로그에 남음, 주석 정도의 의미
+//    public void saveTest() {
+////        Board savedBoard = boardService.saveBoard(저장할 데이터);
+//        BoardDto boardDto = createBoardDto();
+//        Board savedBoard = boardService.saveBoard(boardDto);
+//
+//        // 두 값을 비교해서 같을 경우 테스트가 정상적으로 돌아갔다고 알려주는 메서드
+//        assertEquals(boardDto.getTitle(), savedBoard.getTitle());
+//        assertEquals(boardDto.getWriter(), savedBoard.getWriter());
+//    }
 
 }

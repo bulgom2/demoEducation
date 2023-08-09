@@ -8,6 +8,7 @@ import lombok.ToString;
 import org.modelmapper.ModelMapper;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,8 +26,14 @@ public class BoardDto {
     @NotBlank(message = "내용도 제대로 쓰실게요??? 🙏🙏")
     private String content;
 
-
     private String writer;
+
+    private String memberEmail;
+
+    private LocalDateTime regTime;
+
+    private LocalDateTime updateTime;
+
 
     // @Getter, @Setter 필수
     private static ModelMapper modelMapper = new ModelMapper();

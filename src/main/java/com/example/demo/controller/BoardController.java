@@ -6,6 +6,7 @@ import jdk.net.SocketFlow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,14 +35,17 @@ public class BoardController {
 
     // @Valid의 타입 검증 후, 부합하지 않으면 BindingResult에 DTO에서 넘긴 정보(+문구)를 담음
     @PostMapping(value = "/form")
-    public String boardSave(@Valid BoardDto boardDto, BindingResult bindingResult) {
+    public String boardSave(@Valid BoardDto boardDto, BindingResult bindingResult,
+                            Authentication authentication, Model model) {
+
+        String email = authentication.getName();
 
         // BindingResult가 에러를 가지고 있으면
         if (bindingResult.hasErrors()) {
             return "/pages/boards/boardForm";
         }
         // service 호출
-        boardService.saveBoard(boardDto);
+        boardService.saveBoard(boardDto, email);
         // dto 넘겨주고 service에서는 repository.save()
         return "redirect:/board/info";
     }

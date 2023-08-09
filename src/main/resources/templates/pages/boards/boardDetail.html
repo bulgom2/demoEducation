@@ -111,7 +111,8 @@
               <label for="board-content">내용</label>
               <textarea class="form-control" rows="3" id="board-content" th:text="${boardDto.content}" disabled />
             </div>
-
+            <strong class="mr-2" style="display: inline">최근 수정일</strong>
+            <p style="display: inline; color: gray" th:text="${boardDto.updateTime}"></p>
             <!-- 인풋 없이 -->
             <!--            <div class="row">-->
             <!--              <h4 th:text="${boardDto.title}" style="font-style: italic"></h4>-->
@@ -126,6 +127,30 @@
         </div>  <!-- /.card-body -->
       </div>  <!-- /.card card-default -->
     </section>  <!-- /.content -->
+
+    <!-- 댓글 -->
+    <section class="content">
+      <div class="card card-default">
+        <div class="card-header">
+          <h4 class="card-title">댓글</h4>
+        </div>  <!-- /.card-header -->
+        <div class="card-body">
+          <div class="container-fluid">
+            <form action="/reply/new" method="post">
+              <div class="form-group">
+                <div class="input-group">
+                  <input type="hidden" th:value="${boardDto.id}" name="boardId">
+                  <textarea class="form-control" name="reply" id="reply" rows="2"></textarea>
+                  <button class="btn btn-dark btn-lg" type="submit">작성</button>
+                </div>
+              </div>
+            </form>
+
+          </div>  <!-- /.container-fluid -->
+        </div>  <!-- /.card-body -->
+      </div>  <!-- /.card card-default -->
+    </section>  <!-- /.content -->
+
   </div>  <!-- /.content-wrapper -->
 </th:block>
 </html>

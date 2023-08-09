@@ -2,7 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.dto.BoardDto;
 import com.example.demo.entity.Board;
+import com.example.demo.entity.Member;
 import com.example.demo.repository.BoardRepository;
+import com.example.demo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +20,17 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
+    private final MemberRepository memberRepository;
+
     // 값 저장
-    public Board saveBoard(BoardDto boardDto) {
+    public Board saveBoard(BoardDto boardDto, String email) {
+
+        Member member = memberRepository.findByEmail(email);
+        boardDto.setWriter(member.getName());
 
         // save() 메서드는 내가 준 엔티티가 컨텍스트에 잘 반영됐는지 객체로 반환해주는 기능을 함
         // 저장은 엔티티만 가능
-        return boardRepository.save(Board.createBoard(boardDto));
+        return boardRepository.save(Board.createBoard(boardDto, member));
     }
 
     // 게시물 리스트 뽑기

@@ -68,6 +68,7 @@
                 <th scope="col">NO</th>
                 <th scope="col">제 목</th>
                 <th scope="col">작 성 자</th>
+                <th scope="col">작 성 일</th>
               </tr>
               </thead>
               <tbody>
@@ -75,15 +76,9 @@
                 <th scope="row" th:text="${board.id}"></th>
                 <td th:text="${board.title}"></td>
                 <td th:text="${board.writer}"></td>
+                <td th:text="${board.regTime}"></td>
               </tr>
               </tbody>
-              <tfoot>
-              <tr>
-                <th scope="col">NO</th>
-                <th scope="col">제 목</th>
-                <th scope="col">작 성 자</th>
-              </tr>
-              </tfoot>
             </table>
           </div>  <!-- /.container-fluid -->
         </div>  <!-- /.card-body -->

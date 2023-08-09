@@ -40,7 +40,7 @@ public class MemberController {
 
     // @PathVariable => /login/error/{~~~}
     // @RequestParam => /login/error?error=~~~&exception=~~~
-    @GetMapping(value = "/login/error/")
+    @GetMapping(value = "/login/error")
     public String loginError(Model model, @RequestParam String error, @RequestParam String exception) {
         model.addAttribute("error", error);
         model.addAttribute("exception", exception);
