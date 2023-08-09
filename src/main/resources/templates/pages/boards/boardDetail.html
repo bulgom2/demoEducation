@@ -92,7 +92,7 @@
         <div class="card-header">
           <h4 class="card-title" th:text="${boardDto.id} + ' 번 글'"></h4>
           <div class="btn-group float-right">
-            <button type="button" class="btn btn-outline-dark btn-sm">목록</button>
+            <button type="button" class="btn btn-outline-dark btn-sm" th:href="@{/board/info}">목록</button>
             <button id="save-btn" type="button" class="btn btn-outline-dark btn-sm"
                     style="display: none;" th:data-id="${boardDto.id}" onclick="saveBoard(this)">저장</button>
             <button id="update-btn" type="button" class="btn btn-outline-dark btn-sm"

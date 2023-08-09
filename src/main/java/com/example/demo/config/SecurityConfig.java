@@ -1,9 +1,12 @@
 package com.example.demo.config;
 
+import com.example.demo.security.LoginFailHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -21,7 +24,7 @@ public class SecurityConfig {
                 .loginPage("/member/login")
                 .defaultSuccessUrl("/")
                 .usernameParameter("email")
-//                .failureHandler(loginFailHandler())
+                .failureHandler(loginFailHandler())
 //                .failureUrl()
                 .and()
                 .logout()
@@ -35,9 +38,21 @@ public class SecurityConfig {
         // .hasAnyRole(~, ~) => 특정 권한만 허용함 (로그인 안 한 사람은 못 들어옴)
         // 루트에서 밑으로 하향식으로 내려감
         httpSecurity.authorizeRequests()
-                .mvcMatchers("/").hasAnyRole("USER", "ADMIN")
+                .mvcMatchers("/").permitAll()
+                .mvcMatchers("/member").permitAll()
+                .mvcMatchers("/board/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().permitAll();
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    public LoginFailHandler loginFailHandler() {
+        return new LoginFailHandler();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

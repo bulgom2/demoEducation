@@ -32,7 +32,7 @@ public class BoardController {
         return "/pages/boards/boardForm";
     }
 
-    // @Valid의 타입 검증 후, 부합하지 않으면 BindingResult에 정보를 담음
+    // @Valid의 타입 검증 후, 부합하지 않으면 BindingResult에 DTO에서 넘긴 정보(+문구)를 담음
     @PostMapping(value = "/form")
     public String boardSave(@Valid BoardDto boardDto, BindingResult bindingResult) {
 

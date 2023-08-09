@@ -70,6 +70,4 @@ public class BoardService {
         board.updateBoard(boardDto);
     }
 
-
-
 }

@@ -8,40 +8,44 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "member")
+@Table(name = "MEMBER")
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
 public class Member {
 
-    @Id
-    @Column(name = "member_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    // email을 PK로 사용하고 있기 때문에 index를 매기지 않아도 됨.
+//    @Id
+//    @Column(name = "member_id")
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    private Long id;
 
     private String name;
 
-    private String email;
+    @Id
+    private String email;   // 유니크로 활용
 
     private String password;
 
-    @Enumerated(EnumType.STRING)    // 내부에서는 Enum이지만 외부에서는 String으로 취급하게 함
+    @Enumerated(EnumType.STRING)
     private Role role;
 
-    public static Member createmember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {
+
+    // dto를 entity 로 만드는 메서드
+    // 멤버를 만드는 메서드 // 회원가입 정보를 받아오는 dto
+    // 패스워드를 암호화
+    // 엔티티로 만들땐 builder를 쓰고 dto로 만들 땐 modelmapper를 쓴다
+    public static Member createMember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder){
         return Member.builder()
                 .name(memberFormDto.getName())
                 .email(memberFormDto.getEmail())
-                .password(memberFormDto.getPassword())
-                .role(Role.USER)
+                .password(passwordEncoder.encode(memberFormDto.getPassword()))
+                .role(Role.USER)   // 보통 create 할때는 가장 낮은 권한을 주고, 권한 관리에서 권한 수정
                 .build();
     }
 
-    // 권한 반환 메소드
-    public String getRoleKey() {
-        return this.role.getKey();
-    }
-
+    // 체이닝에서 특정 값만 빌더하기 위해 빌더로 만듦
     @Builder
     public Member(String name, String email, String password, Role role) {
         this.name = name;
@@ -50,8 +54,10 @@ public class Member {
         this.role = role;
     }
 
-
-
-
+    // 스트링을 반환하는 메서드
+    // 어떤 권한인지 반환하는
+    public String getRoleKey(){
+        return this.role.getKey();
+    }
 
 }
