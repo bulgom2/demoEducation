@@ -106,7 +106,7 @@
             <!-- 페이징 버튼 -->
             <div class="float-right">
               <nav aria-label="page navigation">
-                <ul class="pagination" th:with="start=${page.number + 1}, end=(${(start + 4 >= page.totalPages) ? page.totalPages : start + 4})">
+                <ul class="pagination" th:with="start=${page.number + 1}, end=(${(start + 4 >= page.totalPages) ? ((page.totalPages < start) ? start : page.totalPages) : start + 4})">
                   <li class="page-item" th:classappend="${page.first} ? 'disabled'" th:with="prePage=(${(page.number - 5 < 0) ? 0 : page.number - 5})">
                     <a class="page-link" th:href="@{/board/info(page=${prePage})}">이전</a>
                   </li>
