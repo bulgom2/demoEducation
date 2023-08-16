@@ -24,6 +24,25 @@
       };
   }
 
+  function showPage(obj) {
+      let num = $(obj).text() - 1;
+      let url = '/board/info/' + num;
+      $.ajax({
+          url: url,
+          type: 'POST',
+          dataType: 'html',
+          cache: false,
+          success: function (data) {
+              let pageCard = $('#pageCard');  // id가 pageCard인 요소를 불러옴
+              pageCard.children().remove();   // 그의 자식요소를 지움
+              pageCard.append(data);          // 그 자리에 받아온 데이터를 채움
+              $('.active').removeClass('active');
+              $(obj).parent().addClass('active');
+          }
+      })
+
+  }
+
 
   </script>
 </th:block>
@@ -31,6 +50,9 @@
 <th:block layout:fragment="css">  <!-- 리소스 가져올 링크 들어갈 곳 -->
   <style th:inline="css">
       tbody > tr {
+          cursor: pointer;
+      }
+      a {
           cursor: pointer;
       }
   </style>
@@ -71,8 +93,8 @@
                 <th scope="col">작 성 일</th>
               </tr>
               </thead>
-              <tbody>
-              <tr th:each="board : ${boards}" onclick="showDetail(this)">
+              <tbody id="pageCard">
+              <tr th:each="board : ${page.content}" onclick="showDetail(this)">
                 <th scope="row" th:text="${board.id}"></th>
                 <td th:text="${board.title}"></td>
                 <td th:text="${board.writer}"></td>
@@ -80,6 +102,24 @@
               </tr>
               </tbody>
             </table>
+
+            <!-- 페이징 버튼 -->
+            <div class="float-right">
+              <nav aria-label="page navigation">
+                <ul class="pagination" th:with="start=${page.number + 1}, end=(${(start + 4 >= page.totalPages) ? page.totalPages : start + 4})">
+                  <li class="page-item" th:classappend="${page.first} ? 'disabled'" th:with="prePage=(${(page.number - 5 < 0) ? 0 : page.number - 5})">
+                    <a class="page-link" th:href="@{/board/info(page=${prePage})}">이전</a>
+                  </li>
+                  <li class="page-item" th:each="num : ${#numbers.sequence(start,end)}" th:classappend="${page.number + 1 eq num} ? 'active'">
+                    <a class="page-link" th:text="${num}" onclick="showPage(this)"></a>
+                  </li>
+                  <li class="page-item" th:classappend="${page.number + 5 >= page.totalPages} ? 'disabled'" th:with="nextPage=(${(page.number + 5 > page.totalPages) ? page.totalPages : page.number + 5})">
+                    <a class="page-link" th:href="@{/board/info(page=${nextPage})}">다음</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>  <!-- /.float-right -->
+
           </div>  <!-- /.container-fluid -->
         </div>  <!-- /.card-body -->
       </div>  <!-- /.card card-default -->

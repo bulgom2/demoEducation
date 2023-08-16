@@ -3,8 +3,9 @@ package com.example.demo.controller;
 import com.example.demo.dto.BoardDto;
 import com.example.demo.service.BoardService;
 import com.example.demo.service.ReplyService;
-import jdk.net.SocketFlow;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,10 +24,21 @@ public class BoardController {
     private final BoardService boardService;
     private final ReplyService replyService;
 
+    // 게시글 목록 & 페이징 버튼
     @GetMapping(value = "/info")
-    public String boardInfo(Model model) {
-        model.addAttribute("boards", boardService.getBoardList());
+    public String boardInfo(@RequestParam(value = "page", required = false, defaultValue = "0") String page,
+                            Model model) {
+        Pageable pageable = PageRequest.of(Integer.parseInt(page),5);
+        model.addAttribute("page", boardService.getBoardList(pageable));
         return "/pages/boards/boardInfo";
+    }
+
+    // 페이지 이동
+    @PostMapping(value = "/info/{page}")
+    public String boardPages(@PathVariable Integer page, Model model) {
+        Pageable pageable = PageRequest.of(page, 5);
+        model.addAttribute("page", boardService.getBoardList(pageable));
+        return "/pages/boards/pageCard";
     }
 
     @GetMapping(value = "/form")
@@ -61,12 +73,7 @@ public class BoardController {
         String userEmail = authentication.getName();
         BoardDto boardDto = boardService.showDetail(boardId);
 
-        if (boardDto.getMemberEmail().equals(userEmail)) {
-            model.addAttribute("mine", true);
-        } else {
-            model.addAttribute("mine", false);
-        }
-
+        model.addAttribute("userEmail", userEmail);
         model.addAttribute("boardDto", boardDto);
         model.addAttribute("replies", replyService.getReplyList(boardId));
 

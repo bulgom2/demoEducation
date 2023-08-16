@@ -6,6 +6,8 @@ import com.example.demo.entity.Member;
 import com.example.demo.repository.BoardRepository;
 import com.example.demo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
@@ -34,24 +36,26 @@ public class BoardService {
     }
 
     // 게시물 리스트 뽑기
-    public List<BoardDto> getBoardList() {
+    public Page<Board> getBoardList(Pageable pageable) {
 
-        // 제네릭에다가 리스트에 BoardDto를 담을 거라고 명시함
-        List<BoardDto> boardDtos = new ArrayList<>();
+        return boardRepository.findAll(pageable);
 
-        // 가져온 소스를 모두 살펴봐야 할 때 사용
-        for (Board board : boardRepository.findAll()) {
-            boardDtos.add(BoardDto.of(board));
-        }
-
+//        // Pageable 사용 시 불필요
+//        // 제네릭에다가 리스트에 BoardDto를 담을 거라고 명시함
+//        List<BoardDto> boardDtos = new ArrayList<>();
+//
+//        // 가져온 소스를 모두 살펴봐야 할 때 사용
+//        for (Board board : boardRepository.findAll()) {
+//            boardDtos.add(BoardDto.of(board));
+//
 //        // 같은 기능
 //        // 특정 부분만 살펴보거나 해야 할 때 사용
 //        List<Board> boards = boardRepository.findAll();
 //        for (int i=0; i<boards.size(); i++) {
 //            boardDtos.add(BoardDto.of(boards.get(i)));
 //        }
-
-        return boardDtos;
+//
+//        return boardDtos;
     }
 
     // 게시물 상세 조회

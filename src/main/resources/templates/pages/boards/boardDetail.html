@@ -125,7 +125,7 @@
       <div class="card card-default">
         <div class="card-header">
           <h4 class="card-title" th:text="${boardDto.id} + ' 번 글'"></h4>
-            <div class="btn-group float-right" th:if="${mine}">
+            <div class="btn-group float-right" th:if="${#strings.equals(boardDto.memberEmail, userEmail)}">
               <button id="update-btn" type="button" class="btn btn-outline-dark btn-sm"
                       onclick="updateBoard(this)">수정</button>
               <button id="save-btn" type="button" class="btn btn-outline-dark btn-sm"
