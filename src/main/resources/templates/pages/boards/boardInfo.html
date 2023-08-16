@@ -76,7 +76,7 @@
                 <th scope="row" th:text="${board.id}"></th>
                 <td th:text="${board.title}"></td>
                 <td th:text="${board.writer}"></td>
-                <td th:text="${board.regTime}"></td>
+                <td th:text="${#temporals.format(board.regTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
               </tr>
               </tbody>
             </table>

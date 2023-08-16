@@ -15,7 +15,7 @@
           url: url,
           type: 'DELETE', // 컨트롤러의 DeleteMapping 감지
           cache: false,
-          success: function(data) { // 작업 후 뒤로가기를 했을 때 전 동작을 그대로 실행하지 않게 하기 위함
+          success: function (data) { // 작업 후 뒤로가기를 했을 때 전 동작을 그대로 실행하지 않게 하기 위함
               location.replace("/board/info");
           }
       })
@@ -27,7 +27,7 @@
       $('.form-control').attr('disabled', false);
 
       history.pushState(null, null, location.href);
-      window.onpopstate = function(event) {
+      window.onpopstate = function (event) {
           history.go(1);
       }
   }
@@ -48,17 +48,48 @@
           dataType: 'JSON',
           contentType: 'application/json;charset=UTF-8',
           cache: false,
-          success: function(data) { // 통신이 완벽히 이루어지면 버튼과 폼의 상태를 바꿈
+          success: function (data) { // 통신이 완벽히 이루어지면 버튼과 폼의 상태를 바꿈
               $('#save-btn').css('display', 'none');
               $('#update-btn').css('display', 'block');
               $('.form-control').attr('disabled', true);
 
               history.pushState(null, null, location.href);
-              window.onpopstate = function(event) {
+              window.onpopstate = function (event) {
                   location.replace("/board/info");  // 뒤로 갔을 때 게시글 목록으로 가기
               }
           },
-          error: function() {}
+          error: function () {}
+      })
+  }
+
+  function deleteReply(obj) {
+      let id = obj.dataset.id;
+      let url = "/reply/delete/" + id;
+      $.ajax({
+          url: url,
+          type: 'DELETE',
+          success: function () {
+              location.replace(location.href);
+          }
+      })
+  }
+
+  function updateReply(obj) {
+      let id = obj.dataset.id;
+  }
+
+  function showModal(obj) {
+      let id = obj.dataset.id;
+      $('#rid').val(id);
+      let url = "/reply/modal/" + id;
+      $.ajax({
+          url: url,
+          type: 'POST',
+          contentType: 'application/text',
+          success: function (data) {
+              $('div.modal').modal();
+              $('#modalContent').text(data);
+          }
       })
   }
 
@@ -67,6 +98,9 @@
 
 <th:block layout:fragment="css">  <!-- 리소스 가져올 링크 들어갈 곳 -->
   <style th:inline="css">
+    a {
+        cursor: pointer;
+    }
   </style>
 </th:block>
 
@@ -91,15 +125,15 @@
       <div class="card card-default">
         <div class="card-header">
           <h4 class="card-title" th:text="${boardDto.id} + ' 번 글'"></h4>
-          <div class="btn-group float-right">
-            <button type="button" class="btn btn-outline-dark btn-sm" th:href="@{/board/info}">목록</button>
-            <button id="save-btn" type="button" class="btn btn-outline-dark btn-sm"
-                    style="display: none;" th:data-id="${boardDto.id}" onclick="saveBoard(this)">저장</button>
-            <button id="update-btn" type="button" class="btn btn-outline-dark btn-sm"
-                    onclick="updateBoard(this)">수정</button>
-            <button type="button" class="btn btn-outline-dark btn-sm"
-                    th:data-id="${boardDto.id}" onclick="deleteBoard(this)">삭제</button>
-          </div> <!-- /.btn-group -->
+            <div class="btn-group float-right" th:if="${mine}">
+              <button id="update-btn" type="button" class="btn btn-outline-dark btn-sm"
+                      onclick="updateBoard(this)">수정</button>
+              <button id="save-btn" type="button" class="btn btn-outline-dark btn-sm"
+                      style="display: none;" th:data-id="${boardDto.id}" onclick="saveBoard(this)">저장</button>
+              <button type="button" class="btn btn-outline-dark btn-sm"
+                      th:data-id="${boardDto.id}" onclick="deleteBoard(this)">삭제</button>
+            </div>  <!-- /.btn-group -->
+            <button type="button" class="btn btn-outline-dark btn-sm float-right mr-1" onclick="location.href='/board/info'">목록</button>
         </div>  <!-- /.card-header -->
         <div class="card-body">
           <div class="container-fluid">
@@ -112,7 +146,7 @@
               <textarea class="form-control" rows="3" id="board-content" th:text="${boardDto.content}" disabled />
             </div>
             <strong class="mr-2" style="display: inline">최근 수정일</strong>
-            <p style="display: inline; color: gray" th:text="${boardDto.updateTime}"></p>
+            <p style="display: inline; color: gray" th:text="${#temporals.format(boardDto.updateTime, 'yyyy-MM-dd HH:mm:ss')}"></p>
             <!-- 인풋 없이 -->
             <!--            <div class="row">-->
             <!--              <h4 th:text="${boardDto.title}" style="font-style: italic"></h4>-->
@@ -142,15 +176,62 @@
                   <input type="hidden" th:value="${boardDto.id}" name="boardId">
                   <textarea class="form-control" name="reply" id="reply" rows="2"></textarea>
                   <button class="btn btn-dark btn-lg" type="submit">작성</button>
-                </div>
-              </div>
+                </div>  <!-- /.input-group -->
+              </div>  <!-- /.form-group -->
+              <hr />
             </form>
-
+            <div class="list-group">  <!-- 밑으로 차곡차곡 쌓임 -->
+              <div class="row border-bottom" th:each="reply : ${replies}">
+                <div class="col">
+                  <div class="comment">
+                    <strong th:text="${reply.writer}">작성자</strong>
+                    <p th:text="${reply.content}">댓글 내용</p>
+                  </div>  <!-- /.comment -->
+                </div>  <!-- /.col -->
+                <div class="col float-right">
+                  <div class="container-fluid">
+                    <div class="list-group float-right">
+                      <div class="float-right">
+                        <p th:text="${#temporals.format(reply.updateTime, 'yyyy-MM-dd HH:mm:ss')}">최근 수정 날짜</p>
+                      </div>  <!-- /.float-right -->
+                      <div class="float-right">
+                        <a class="float-right" th:data-id="${reply.id}" onclick="deleteReply(this)">삭제</a>
+                        <a class="float-right mr-2" th:data-id="${reply.id}" onclick="showModal(this)">수정</a>
+                      </div>  <!-- /.float-right -->
+                    </div>  <!-- /.list-group float-right -->
+                  </div>  <!-- /.container-fluid -->
+                </div>  <!-- /.col float-right -->
+              </div>  <!-- /.row border-bottom -->
+            </div>  <!-- /.list-group -->
           </div>  <!-- /.container-fluid -->
         </div>  <!-- /.card-body -->
       </div>  <!-- /.card card-default -->
-    </section>  <!-- /.content -->
 
+      <!-- 모달 영역 -->
+      <div class="modal fade">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">댓글 수정</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>  <!-- /.modal-header -->
+            <div class="modal-body">
+              <div class="form-group">
+                <input type="hidden" id="rid" name="replyId">
+                <textarea id="modalContent" class="form-control" rows="3"></textarea>
+              </div>  <!-- /.form-group -->
+            </div>  <!-- /.modal-body -->
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+              <button type="button" class="btn btn-dark" onclick="showModal(this)">저장</button>
+            </div>  <!-- /.modal-footer -->
+          </div>  <!-- /.modal-content -->
+        </div>  <!-- /.modal-dialog -->
+      </div>  <!-- /.modal fade -->
+      <!-- 모달 끝 -->
+    </section>  <!-- /.content -->
   </div>  <!-- /.content-wrapper -->
 </th:block>
 </html>

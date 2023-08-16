@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.BoardDto;
 import com.example.demo.service.BoardService;
+import com.example.demo.service.ReplyService;
 import jdk.net.SocketFlow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 public class BoardController {
 
     private final BoardService boardService;
+    private final ReplyService replyService;
 
     @GetMapping(value = "/info")
     public String boardInfo(Model model) {
@@ -51,10 +53,22 @@ public class BoardController {
     }
 
     // 게시물 조회
+    // uri에 변수로 받을 값을 @PathVariable로 받아옴
+    // Authentication에는 요청된 사용자의 정보가 담김
     @GetMapping(value = "/{boardId}")
-    public String boardDetail(@PathVariable Long boardId, Model model) { // uri에 변수로 받을 값을 @PathVariable로 받아옴
+    public String boardDetail(@PathVariable Long boardId, Model model, Authentication authentication) {
 
-        model.addAttribute("boardDto", boardService.showDetail(boardId));
+        String userEmail = authentication.getName();
+        BoardDto boardDto = boardService.showDetail(boardId);
+
+        if (boardDto.getMemberEmail().equals(userEmail)) {
+            model.addAttribute("mine", true);
+        } else {
+            model.addAttribute("mine", false);
+        }
+
+        model.addAttribute("boardDto", boardDto);
+        model.addAttribute("replies", replyService.getReplyList(boardId));
 
         return "/pages/boards/boardDetail";
     }
