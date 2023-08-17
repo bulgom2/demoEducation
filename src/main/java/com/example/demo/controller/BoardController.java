@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.BoardDto;
+import com.example.demo.dto.ReplyDto;
 import com.example.demo.service.BoardService;
+import com.example.demo.service.ReReplyService;
 import com.example.demo.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/board")
@@ -23,6 +26,7 @@ public class BoardController {
 
     private final BoardService boardService;
     private final ReplyService replyService;
+    private final ReReplyService reReplyService;
 
     // 게시글 목록 & 페이징 버튼
     @GetMapping(value = "/info")
@@ -72,10 +76,14 @@ public class BoardController {
 
         String userEmail = authentication.getName();
         BoardDto boardDto = boardService.showDetail(boardId);
+        List<ReplyDto> replyDtoList = replyService.getReplyList(boardId);
+        for (ReplyDto r : replyDtoList) {
+            r.setReReplyDtoList(reReplyService.getReReplies(r.getId()));
+        }
 
         model.addAttribute("userEmail", userEmail);
         model.addAttribute("boardDto", boardDto);
-        model.addAttribute("replies", replyService.getReplyList(boardId));
+        model.addAttribute("replies", replyDtoList);
 
         return "/pages/boards/boardDetail";
     }

@@ -62,6 +62,7 @@
       })
   }
 
+  // 댓글 삭제
   function deleteReply(obj) {
       let id = obj.dataset.id;
       let url = "/reply/delete/" + id;
@@ -74,11 +75,30 @@
       })
   }
 
+  // 댓글 수정
   function updateReply(obj) {
-      let id = obj.dataset.id;
+      let id = $('#rid').val();
+      let url = "/reply/update/" + id;
+      let data = $('#modalContent').val();
+      $.ajax({
+          url: url,
+          type: 'PATCH',
+          data: data,
+          dataType: 'html',
+          contentType: 'application/text',
+          success: function (data) {
+              let replyCard = $('#replyCard');
+              $('div.modal').modal('hide');
+              replyCard.children().remove();
+              replyCard.append(data);
+              location.replace(location.href);
+          }
+      })
+
   }
 
-  function showModal(obj) {
+  // 댓글 수정 모달창 띄우기
+  function showUpdateReplyModal(obj) {
       let id = obj.dataset.id;
       $('#rid').val(id);
       let url = "/reply/modal/" + id;
@@ -91,6 +111,52 @@
               $('#modalContent').text(data);
           }
       })
+  }
+
+  function showReReplyForm(obj) {
+      let id = obj.dataset.id;
+      let reReplyForm = "<form action=\"/reReply/new\" method=\"post\" id=\"reReplyForm\">\n" +
+          "       <div class=\"form-group\">\n" +
+          "        <div class=\"input-group\">\n" +
+          "         <input type=\"hidden\" name=\"replyId\" id=\"replyId\">\n" +
+          "         <textarea class=\"form-control\" id=\"reReply\" name=\"reReply\" rows=\"2\"></textarea>\n" +
+          "         <button class=\"btn btn-dark btn-lg\" type=\"submit\">작성</button>\n" +
+          "        </div>\n" +
+          "       </div>\n" +
+          "      </form>";
+      // 형제 요소가 있을 때는 대댓창 띄우지 않기 부분 추가해아 함
+      $(obj).closest('.list-group').append(reReplyForm);
+      $('#replyId').val(id);
+  }
+
+  function deleteReReply(obj) {
+      let id = obj.dataset.id;
+      let url = '/reReply/delete/' + id;
+      $.ajax({
+          url: url,
+          type: 'DELETE',
+          success: function () {
+              location.replace(location.href);
+          }
+      })
+  }
+
+  function updateReReply(obj) { // 이 펑션이 달린 버튼이 obj로 들어감
+      let id = obj.dataset.id;
+      let updateForm = "<form action=\"/reReply/update\" method=\"post\" id=\"reReplyUpdateForm\">\n" +
+          "       <div class=\"form-group\">\n" +
+          "        <div class=\"input-group\">\n" +
+          "         <input type=\"hidden\" name=\"reReplyId\" id=\"reReplyId\">\n" +
+          "         <textarea class=\"form-control\" id=\"reReply\" name=\"reReply\" rows=\"2\"></textarea>\n" +
+          "         <button class=\"btn btn-dark btn-lg\" type=\"submit\">수정</button>\n" +
+          "        </div>\n" +
+          "       </div>\n" +
+          "      </form>";
+      let content = $(obj).closest('.comment').children().last().text();
+      $(obj).closest('.comment').children().last().remove();
+      $(obj).closest('.comment').append(updateForm);
+      $('#reReplyId').val(id);
+      $('#reReply').text(content);
   }
 
   </script>
@@ -180,29 +246,48 @@
               </div>  <!-- /.form-group -->
               <hr />
             </form>
-            <div class="list-group">  <!-- 밑으로 차곡차곡 쌓임 -->
-              <div class="row border-bottom" th:each="reply : ${replies}">
-                <div class="col">
-                  <div class="comment">
-                    <strong th:text="${reply.writer}">작성자</strong>
-                    <p th:text="${reply.content}">댓글 내용</p>
-                  </div>  <!-- /.comment -->
-                </div>  <!-- /.col -->
-                <div class="col float-right">
-                  <div class="container-fluid">
-                    <div class="list-group float-right">
-                      <div class="float-right">
-                        <p th:text="${#temporals.format(reply.updateTime, 'yyyy-MM-dd HH:mm:ss')}">최근 수정 날짜</p>
-                      </div>  <!-- /.float-right -->
-                      <div class="float-right">
-                        <a class="float-right" th:data-id="${reply.id}" onclick="deleteReply(this)">삭제</a>
-                        <a class="float-right mr-2" th:data-id="${reply.id}" onclick="showModal(this)">수정</a>
-                      </div>  <!-- /.float-right -->
-                    </div>  <!-- /.list-group float-right -->
-                  </div>  <!-- /.container-fluid -->
-                </div>  <!-- /.col float-right -->
-              </div>  <!-- /.row border-bottom -->
-            </div>  <!-- /.list-group -->
+            <div id="replyCard">
+              <div class="list-group ml-2 mr-2" th:each="reply : ${replies}">
+                <div>
+                  <div class="row border-bottom mb-2">
+                    <div class="col">
+                      <div class="comment">
+                        <div class="d-flex flex-row align-items-center">
+                          <strong th:text="${reply.writer}"></strong>
+                          <p class="small m-0 ml-2" style="color: gray;" th:text="${#temporals.format(reply.updateTime, 'yyyy-MM-dd HH:mm:ss')}"></p>
+                          <div th:if="${#strings.equals(userEmail, reply.memberEmail)}">
+                            <a class="ml-1" th:data-id="${reply.id}" onclick="deleteReply(this)">삭제</a>
+                            <a class="ml-0" th:data-id="${reply.id}" onclick="showUpdateReplyModal(this)">수정</a>
+                          </div>
+                          <a class="ml-1" th:data-id="${reply.id}" onclick="showReReplyForm(this)">답글</a>
+                        </div>  <!-- /.d-flex flex-row align-items-center -->
+                        <p th:text="${reply.content}"></p>
+                      </div>  <!-- /.comment -->
+
+                    </div>  <!-- /.col -->
+
+                  </div>  <!-- /.row border-bottom mb-2 -->
+                </div>
+
+                <!-- 대댓글 -->
+                <div class="row mb-2 border-bottom" style="margin-left: 40px;" th:each="reReply : ${reply.reReplyDtoList}">
+                  <div class="col">
+                    <div class="comment">
+                      <div class="d-flex flex-row align-items-center">
+                        <strong th:text="${reReply.writer}"></strong>
+                        <p class="small m-0 ml-2" style="color: gray;" th:text="${#temporals.format(reReply.updateTime, 'yyyy-MM-dd HH:mm:ss')}"></p>
+                        <div th:if="${#strings.equals(reReply.memberEmail, userEmail)}">
+                          <a class="ml-1" th:data-id="${reReply.id}" onclick="deleteReReply(this)">삭제</a>
+                          <a class="ml-0" th:data-id="${reReply.id}" onclick="updateReReply(this)">수정</a>
+                        </div>
+                      </div>  <!-- /.d-flex flex-row align-items-center -->
+                      <p th:text="${reReply.content}"></p>
+                    </div>  <!-- /.comment -->
+                  </div>  <!-- /.col -->
+                </div>  <!-- /.row mb-2 border-bottom -->
+
+              </div>  <!-- /.list-group -->
+            </div>  <!-- /#replyCard -->
           </div>  <!-- /.container-fluid -->
         </div>  <!-- /.card-body -->
       </div>  <!-- /.card card-default -->
@@ -225,7 +310,7 @@
             </div>  <!-- /.modal-body -->
             <div class="modal-footer justify-content-between">
               <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-              <button type="button" class="btn btn-dark" onclick="showModal(this)">저장</button>
+              <button type="button" class="btn btn-dark" onclick="updateReply(this)">저장</button>
             </div>  <!-- /.modal-footer -->
           </div>  <!-- /.modal-content -->
         </div>  <!-- /.modal-dialog -->
@@ -235,4 +320,3 @@
   </div>  <!-- /.content-wrapper -->
 </th:block>
 </html>
-
