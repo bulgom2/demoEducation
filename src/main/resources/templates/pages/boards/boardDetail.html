@@ -115,6 +115,8 @@
 
   function showReReplyForm(obj) {
       let id = obj.dataset.id;
+
+      if ($('#reReplyForm').length === 0) {
       let reReplyForm = "<form action=\"/reReply/new\" method=\"post\" id=\"reReplyForm\">\n" +
           "       <div class=\"form-group\">\n" +
           "        <div class=\"input-group\">\n" +
@@ -124,9 +126,10 @@
           "        </div>\n" +
           "       </div>\n" +
           "      </form>";
-      // 형제 요소가 있을 때는 대댓창 띄우지 않기 부분 추가해아 함
+
       $(obj).closest('.list-group').append(reReplyForm);
       $('#replyId').val(id);
+      }
   }
 
   function deleteReReply(obj) {
