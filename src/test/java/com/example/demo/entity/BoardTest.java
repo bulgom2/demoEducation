@@ -18,19 +18,19 @@ import static org.junit.jupiter.api.Assertions.*;
 // @TestPropertySource(properties = {"spring.config.location=classpath:application-test.yml"})
 class BoardTest {
 
-    @Autowired
-    private BoardService boardService;
-
-    // 더미데이터 생성용
-    private BoardDto createBoardDto() {
-        // 값을 담을 DTO 생성
-        BoardDto boardDto = new BoardDto();
-        // DTO의 필드에 맞는 값을 직접 기입
-        boardDto.setTitle("test1");
-        boardDto.setWriter("bulgomi");
-        // Board 엔티티
-        return boardDto;
-    }
+//    @Autowired
+//    private BoardService boardService;
+//
+//    // 더미데이터 생성용
+//    private BoardDto createBoardDto() {
+//        // 값을 담을 DTO 생성
+//        BoardDto boardDto = new BoardDto();
+//        // DTO의 필드에 맞는 값을 직접 기입
+//        boardDto.setTitle("test1");
+//        boardDto.setWriter("bulgomi");
+//        // Board 엔티티
+//        return boardDto;
+//    }
 
 //    @Test
 //    @DisplayName("게시글 저장 테스트")  // 테스트 로그에 남음, 주석 정도의 의미

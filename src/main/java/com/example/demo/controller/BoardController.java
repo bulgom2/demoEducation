@@ -34,7 +34,7 @@ public class BoardController {
                             Model model) {
         Pageable pageable = PageRequest.of(Integer.parseInt(page),5);
         model.addAttribute("page", boardService.getBoardList(pageable));
-        return "/pages/boards/boardInfo";
+        return "pages/boards/boardInfo";
     }
 
     // 페이지 이동
@@ -42,13 +42,13 @@ public class BoardController {
     public String boardPages(@PathVariable Integer page, Model model) {
         Pageable pageable = PageRequest.of(page, 5);
         model.addAttribute("page", boardService.getBoardList(pageable));
-        return "/pages/boards/pageCard";
+        return "pages/boards/pageCard";
     }
 
     @GetMapping(value = "/form")
     public String boardForm(Model model) {
         model.addAttribute("boardDto", new BoardDto());
-        return "/pages/boards/boardForm";
+        return "pages/boards/boardForm";
     }
 
     // @Valid의 타입 검증 후, 부합하지 않으면 BindingResult에 DTO에서 넘긴 정보(+문구)를 담음
@@ -60,7 +60,7 @@ public class BoardController {
 
         // BindingResult가 에러를 가지고 있으면
         if (bindingResult.hasErrors()) {
-            return "/pages/boards/boardForm";
+            return "pages/boards/boardForm";
         }
         // service 호출
         boardService.saveBoard(boardDto, email);
@@ -85,7 +85,7 @@ public class BoardController {
         model.addAttribute("boardDto", boardDto);
         model.addAttribute("replies", replyDtoList);
 
-        return "/pages/boards/boardDetail";
+        return "pages/boards/boardDetail";
     }
 
     // 게시물 삭제
